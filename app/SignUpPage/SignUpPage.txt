@@ -1,0 +1,256 @@
+//SignUpPage.tsx
+
+import React, { useState } from "react";
+import {
+	KeyboardAvoidingView,
+	Platform,
+	SafeAreaView,
+	ScrollView,
+	Text,
+	TextInput,
+	TouchableOpacity,
+	View,
+} from "react-native";
+import { styles } from "./SignUpStyles";
+
+export default function SignUpPage() {
+	const [email, setEmail] = useState("");
+	const [password, setPassword] = useState("");
+	const [repeatPassword, setRepeatPassword] = useState("");
+
+	const [emailError, setEmailError] = useState("");
+	const [passwordError, setPasswordError] = useState("");
+
+	const validateEmail = (text: string) => {
+		setEmail(text);
+		// Simple email regex validation
+		const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+		if (text.length === 0) {
+			setEmailError("");
+		} else if (!emailRegex.test(text)) {
+			setEmailError("Please enter a valid email address");
+		} else {
+			setEmailError("");
+		}
+	};
+
+	const validatePasswordsMatch = (text: string) => {
+		setRepeatPassword(text);
+		if (text.length === 0) {
+			setPasswordError("");
+		} else if (text !== password) {
+			setPasswordError("Passwords do not match");
+		} else {
+			setPasswordError("");
+		}
+	};
+
+	const handlePasswordChange = (text: string) => {
+		setPassword(text);
+		if (repeatPassword.length > 0 && text !== repeatPassword) {
+			setPasswordError("Passwords do not match");
+		} else {
+			setPasswordError("");
+		}
+	};
+
+	const handleSignUp = () => {
+		// For now, it doesn't do anything
+		console.log("Sign up pressed");
+	};
+
+	return (
+		<SafeAreaView style={{ flex: 1, backgroundColor: "#00c6ff" }}>
+			<KeyboardAvoidingView
+				style={styles.background}
+				behavior={Platform.OS === "ios" ? "padding" : "height"}
+			>
+				<ScrollView
+					contentContainerStyle={{ flexGrow: 1, justifyContent: "center" }}
+					showsVerticalScrollIndicator={false}
+					keyboardShouldPersistTaps="handled"
+				>
+					<View style={styles.card}>
+						<Text style={styles.title}>Sign Up</Text>
+
+						<View style={styles.inputContainer}>
+							<TextInput
+								style={[styles.input, emailError ? styles.inputError : null]}
+								placeholder="e-mail"
+								placeholderTextColor="#a0a0a0"
+								keyboardType="email-address"
+								autoCapitalize="none"
+								value={email}
+								onChangeText={validateEmail}
+							/>
+							{emailError ? (
+								<Text style={styles.errorText}>{emailError}</Text>
+							) : null}
+						</View>
+
+						<View style={styles.inputContainer}>
+							<TextInput
+								style={styles.input}
+								placeholder="password"
+								placeholderTextColor="#a0a0a0"
+								secureTextEntry
+								value={password}
+								onChangeText={handlePasswordChange}
+							/>
+						</View>
+
+						<View style={styles.inputContainer}>
+							<TextInput
+								style={[styles.input, passwordError ? styles.inputError : null]}
+								placeholder="repeat password"
+								placeholderTextColor="#a0a0a0"
+								secureTextEntry
+								value={repeatPassword}
+								onChangeText={validatePasswordsMatch}
+							/>
+							{passwordError ? (
+								<Text style={styles.errorText}>{passwordError}</Text>
+							) : null}
+						</View>
+
+						<View style={styles.buttonContainer}>
+							<TouchableOpacity
+								style={styles.button}
+								onPress={handleSignUp}
+								activeOpacity={0.8}
+							>
+								<Text style={styles.buttonText}>Sign up</Text>
+							</TouchableOpacity>
+						</View>
+
+						<TouchableOpacity>
+							<Text style={styles.footerText}>Read User License Agreement</Text>
+						</TouchableOpacity>
+					</View>
+				</ScrollView>
+			</KeyboardAvoidingView>
+		</SafeAreaView>
+	);
+}
+
+
+//SignUpStyles.ts
+import { Dimensions, Platform, StyleSheet } from "react-native";
+
+const { height } = Dimensions.get("window");
+
+export const styles = StyleSheet.create({
+	background: {
+		flex: 1,
+		backgroundColor: "#00c6ff", // Bright cyan background
+		justifyContent: "center",
+		alignItems: "center",
+		padding: 15,
+	},
+	card: {
+		backgroundColor: "#ffffff",
+		width: "100%",
+		maxWidth: 400,
+		height: height * 0.9, // Make it tall like the image
+		borderRadius: 40,
+		paddingVertical: 50,
+		paddingHorizontal: 30,
+		alignItems: "center",
+		...Platform.select({
+			ios: {
+				shadowColor: "#000",
+				shadowOffset: { width: 0, height: 4 },
+				shadowOpacity: 0.1,
+				shadowRadius: 15,
+			},
+			android: {
+				elevation: 8,
+			},
+			web: {
+				boxShadow: "0px 10px 30px rgba(0, 0, 0, 0.1)",
+			},
+		}),
+	},
+	title: {
+		fontSize: 42,
+		fontWeight: "800",
+		color: "#18c3d9", // Match the cyan color of the title
+		marginTop: 30,
+		marginBottom: 60,
+		letterSpacing: 1,
+	},
+	inputContainer: {
+		width: "100%",
+		marginBottom: 25,
+	},
+	input: {
+		backgroundColor: "#ffffff",
+		borderRadius: 30,
+		paddingVertical: 18,
+		paddingHorizontal: 30,
+		fontSize: 16,
+		color: "#555",
+		...Platform.select({
+			ios: {
+				shadowColor: "#000",
+				shadowOffset: { width: 0, height: 2 },
+				shadowOpacity: 0.06,
+				shadowRadius: 10,
+			},
+			android: {
+				elevation: 2,
+			},
+			web: {
+				boxShadow: "0px 2px 15px rgba(0, 0, 0, 0.05)",
+			},
+		}),
+	},
+	inputError: {
+		borderWidth: 1,
+		borderColor: "#ff4d4f",
+	},
+	errorText: {
+		color: "#ff4d4f",
+		fontSize: 12,
+		marginLeft: 20,
+		marginTop: 8,
+	},
+	buttonContainer: {
+		width: "100%",
+		marginTop: 40,
+		marginBottom: 30,
+	},
+	button: {
+		backgroundColor: "#18c3d9", // Solid cyan color similar to gradient
+		borderRadius: 30,
+		paddingVertical: 18,
+		alignItems: "center",
+		...Platform.select({
+			ios: {
+				shadowColor: "#18c3d9",
+				shadowOffset: { width: 0, height: 8 },
+				shadowOpacity: 0.4,
+				shadowRadius: 15,
+			},
+			android: {
+				elevation: 8,
+			},
+			web: {
+				boxShadow: "0px 8px 25px rgba(24, 195, 217, 0.4)",
+			},
+		}),
+	},
+	buttonText: {
+		color: "#ffffff",
+		fontSize: 20,
+		fontWeight: "bold",
+		letterSpacing: 0.5,
+	},
+	footerText: {
+		color: "#18c3d9",
+		fontSize: 13,
+		fontWeight: "500",
+		marginTop: "auto", // Push to bottom
+		marginBottom: 20,
+	},
+});
